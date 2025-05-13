@@ -1,0 +1,29 @@
+# general things to ignore
+build/
+dist/
+*.egg-info/
+*.egg
+*.py[cod]
+__pycache__/
+*.so
+*~
+debug.log
+
+# due to using tox and pytest
+.tox
+.cache
+
+*.tgz
+
+.venv/
+.vscode/
+cert/
+*/certbot
+.vscode/
+values.*.*.yaml
+.idea/
+Chart.lock
+temp/
+private.env
+private.*.env
+~$*
