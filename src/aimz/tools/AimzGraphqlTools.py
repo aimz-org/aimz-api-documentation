@@ -8,6 +8,7 @@ QUERY_AIMZ_PROJECTS = '''
                 documentType
                 created
                 name
+                projectNumber
                 description
                 projectType
                 contractModel
