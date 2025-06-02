@@ -1,5 +1,7 @@
+import json
 import os
 import logging
+import time
 from typing import Optional
 
 import requests
@@ -10,10 +12,17 @@ from general import Tools
 log = logging.getLogger(__name__)
 
 
+def CheckIfTokenIsExpired(decodedToken: dict, minSecondsLeft: int = 60) -> bool:
+    expiry = decodedToken['exp']
+    diff = expiry - time.time()
+    expired = diff <= minSecondsLeft
+    return expired
+
+
 def GetToken(host: str,
              tenantId: str,
              username: Optional[str] = None,
-             password: Optional[str] = None) -> str:
+             password: Optional[str] = None) -> tuple[str, dict]:
     username = username if username is not None else os.getenv('CLIENT_USERNAME', 'client-user')
     password = password if password is not None else os.getenv('CLIENT_PASSWORD', 'client-secret')
 
@@ -24,6 +33,7 @@ def GetToken(host: str,
                     authorization(username: $username, password: $password) {
                         user {
                             token
+                            decodedToken
                         }
                     }
                 }
@@ -38,7 +48,8 @@ def GetToken(host: str,
     response = result.json()
     Tools.AssertGraphqlSuccess(response)
     token = response["data"]["authorization"]["user"]["token"]
-    return token
+    decodedToken = json.loads(response["data"]["authorization"]["user"]["decodedToken"])
+    return token, decodedToken
 
 
 def GetHeaders(tenantId: str, token: str) -> dict:

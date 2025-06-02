@@ -200,11 +200,13 @@ QUERY_AIMZ_INVOICES = '''
                 parameterOverrides
                 overridesUsed
                 invoiceIsSplit
+                invoiceIsSplitManually
                 isParent
                 parentId
                 externalProvider
                 externalId
                 externalReferenceId
+                externalAttachmentId
                 externalRegisteredReferenceId
                 externalIdMissingWithProvider
                 externalProjectId
@@ -451,4 +453,52 @@ QUERY_AIMZ_CONTRACTS = '''
       }
     }
   }
+'''
+
+QUERY_FILE_STORE_FILES = '''
+query storageFiles(
+            $searchIndexStart: Int, 
+            $searchIndexStop: Int, 
+            $searchKey: String, 
+            $id: UUID, 
+            $filename: String, 
+            $key: String, 
+            $changed: DateTime, 
+            $changedBy: String, 
+            $tags: [String], 
+            $includeContent: Boolean) {
+        storageFiles(
+            searchIndexStart: $searchIndexStart, 
+            searchIndexStop: $searchIndexStop, 
+            searchKey: $searchKey, 
+            id: $id, 
+            filename: $filename, 
+            key: $key, 
+            changed: $changed, 
+            changedBy: $changedBy, 
+            tags: $tags, 
+            includeContent: $includeContent) {
+        id
+        filename
+        key
+        changed
+        changedBy
+        metaData
+        content
+        tags
+    }
+}
+'''
+
+QUERY_EXTERNAL_INVOICE_IMAGES = '''
+query externalInvoiceImages($externalId: String!, $externalProvider: ExternalProvider!, $settingId: String, $settingOverrides: JSONString) {
+    externalInvoiceImages(externalId: $externalId, externalProvider: $externalProvider, settingId: $settingId, settingOverrides: $settingOverrides) {
+        settingId
+        externalId
+        externalProvider
+        image
+        imagePage
+        imagesInTotal
+    }
+}
 '''

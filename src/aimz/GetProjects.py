@@ -12,12 +12,14 @@ def GetProjects() -> list[dict]:
     AuthTools.LoadEnviromentVariables()
     host = os.getenv('HOST')
     tenantId = os.getenv('TENANT')
-    token = AuthTools.GetToken(host, tenantId)
-    headers = AuthTools.GetHeaders(tenantId, token)
     index = 0
     limit = 200
     projects: list[dict] = []
+    decodedToken: dict | None = None
     while True:
+        if decodedToken is None or AuthTools.CheckIfTokenIsExpired(decodedToken):
+            token, decodedToken = AuthTools.GetToken(host, tenantId)
+            headers = AuthTools.GetHeaders(tenantId, token)
         newProjects = AimzDocumentStoreTools.QueryAimzProjects(host, headers, 
                                                                queryOffset=index, 
                                                                queryLimit=limit)

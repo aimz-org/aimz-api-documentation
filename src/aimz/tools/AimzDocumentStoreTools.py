@@ -1,3 +1,5 @@
+import json
+import uuid
 from python_graphql_client import GraphqlClient
 
 from general import Tools
@@ -92,3 +94,57 @@ def QueryAimzContracts(host: str,
     data = client.execute(query=query, variables=variables)
     Tools.AssertGraphqlSuccess(data)
     return data['data']['contracts']['documents']
+
+
+def QueryStorageFiles(host: str,
+                      headers: dict,
+                      queryOffset: int | None = None,
+                      queryLimit: int | None = None,
+                      searchKey: str | None = None,
+                      id: uuid.UUID | None = None,
+                      filename: str | None = None,
+                      key: str | None = None,
+                      changed: str | None = None,
+                      changedBy: str | None = None,
+                      tags: list[str] | None = None,
+                      includeContent: bool | None = None) -> list[dict]:
+    client = GraphqlClient(endpoint=f'{host}/graphql', headers=headers)
+    query = AimzGraphqlTools.QUERY_FILE_STORE_FILES
+    variables = {
+        'searchIndexStart': queryOffset,
+        'searchIndexStop': queryOffset + queryLimit if queryOffset is not None and queryLimit is not None else None,
+        'searchKey': searchKey,
+        'id': id,
+        'filename': filename,
+        'key': key,
+        'changed': changed,
+        'changedBy': changedBy,
+        'tags': tags,
+        'includeContent': includeContent,
+    }
+    data = client.execute(query=query, variables=variables)
+    Tools.AssertGraphqlSuccess(data)
+    return data['data']['storageFiles']
+
+
+def QueryExternalInvoiceImages(host: str,
+                               headers: dict,
+                               externalId: str,
+                               externalProvider: str,
+                               settingId: str | None = None,
+                               settingOverrides: list[dict] | None = None) -> list[dict]:
+    if Tools.IsStringEmpty(externalId) or Tools.IsStringEmpty(externalProvider) or Tools.IsDefaultExternalProvider(externalProvider):
+        return []
+    client = GraphqlClient(endpoint=f'{host}/graphql', headers=headers)
+    query = AimzGraphqlTools.QUERY_EXTERNAL_INVOICE_IMAGES
+    variables = {
+        'externalId': externalId,
+        'externalProvider': externalProvider.upper(),
+    }
+    if settingId is not None:
+        variables['settingId'] = settingId
+    if settingOverrides is not None:
+        variables['settingOverrides'] = json.dumps(settingOverrides)
+    data = client.execute(query=query, variables=variables)
+    Tools.AssertGraphqlSuccess(data)
+    return data['data']['externalInvoiceImages']
