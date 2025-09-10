@@ -163,8 +163,8 @@ QUERY_AIMZ_INVOICES = '''
         $status: [InvoiceStatus]
         $approvedStatus: [InvoiceApprovedStatus]
         $isParent: [Boolean]
-        $invoiceDateFrom: DateTime
-        $invoiceDateTo: DateTime
+        $postedDateFrom: DateTime
+        $postedDateTo: DateTime
         ) {
         invoices(
             queryOffset: $queryOffset
@@ -181,8 +181,8 @@ QUERY_AIMZ_INVOICES = '''
             status: $status
             approvedStatus: $approvedStatus
             isParent: $isParent
-            invoiceDateFrom: $invoiceDateFrom
-            invoiceDateTo: $invoiceDateTo
+            postedDateFrom: $postedDateFrom
+            postedDateTo: $postedDateTo
         ) {
             count
             documents {
@@ -217,9 +217,8 @@ QUERY_AIMZ_INVOICES = '''
                 invoiceNumber
                 vatCode
                 vatAmount
-                invoiceDate
-                voucherDate
                 dueDate
+                postedDate
                 comments
                 currencyCode
                 exchangeRate
