@@ -100,6 +100,7 @@ def MutateDocumentUserRoles(client: GraphqlClient, userId: str, documentId: str,
 
 def AssignDocumentUserRole(email: str,
                            documentId: str,
+                           documentType: str = "PROJECT",
                            role: str = "owner",
                            clientId: str = "aimz-aimz-client",
                            verifyEmail: bool = True,
@@ -115,7 +116,7 @@ def AssignDocumentUserRole(email: str,
     client = GraphqlClient(endpoint=f"{host}/graphql", headers=headers)
 
     user = MutateUser(client, email, clientId, verifyEmail, emailRedirectUri)
-    roleName = f"PROJECT-{documentId}-{role}"
+    roleName = f"{documentType}-{documentId}-{role}"
     roleData = QueryRole(client, clientId, roleName)
     success = MutateDocumentUserRoles(client, user["id"], documentId, role, roleData["id"])
 
@@ -131,6 +132,7 @@ def ParseArgs() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Create/update a user and assign a project/document role.")
     parser.add_argument("--email", default=os.getenv("USER_EMAIL"), required=os.getenv("USER_EMAIL") is None, help="User email to mutate.")
     parser.add_argument("--document-id", default=os.getenv("DOCUMENT_ID") or os.getenv("PROJECT_ID"), required=os.getenv("DOCUMENT_ID") is None and os.getenv("PROJECT_ID") is None, help="Project/document id used in the role name and role assignment.")
+    parser.add_argument("--document-type", default=os.getenv("DOCUMENT_TYPE", "PROJECT"), help="Document type to use in the role name and role assignment.")
     parser.add_argument("--role", default=os.getenv("ROLE", "owner"), help="Role suffix to assign, for example owner.")
     parser.add_argument("--client-id", default=os.getenv("CLIENT_ID", "aimz-aimz-client"), help="Aimz client id.")
     parser.add_argument("--email-redirect-uri", default=os.getenv("EMAIL_REDIRECT_URI"), help="Redirect URI used when verify email is enabled.")
@@ -142,6 +144,7 @@ if __name__ == "__main__":
     args = ParseArgs()
     result = AssignDocumentUserRole(email=args.email,
                                     documentId=args.document_id,
+                                    documentType=args.document_type,
                                     role=args.role,
                                     clientId=args.client_id,
                                     verifyEmail=not args.skip_verify_email,
