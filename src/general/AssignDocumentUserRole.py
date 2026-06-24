@@ -27,11 +27,8 @@ mutation user($email: String, $name: String, $verifyEmail: Boolean, $clientId: S
         id
         name
         delete
-        __typename
       }
-      __typename
     }
-    __typename
   }
 }
 """
@@ -41,7 +38,6 @@ query roles($clientId: String, $roleNames: [String]) {
   roles(clientId: $clientId, roleNames: $roleNames) {
     id
     name
-    __typename
   }
 }
 """
@@ -50,7 +46,6 @@ MUTATE_DOCUMENT_USER_ROLES = """
 mutation mutateDocumentUserRoles($userId: String!, $documentRoles: [DocumentRoleDataInput!]!) {
   mutateDocumentUserRoles(userId: $userId, documentRoles: $documentRoles) {
     success
-    __typename
   }
 }
 """
